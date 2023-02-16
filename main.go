@@ -1,9 +1,11 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	routes "jwtAuthMongo/routes"
 	"os"
+
+	routes "github.com/rishabhagrawalzra/jwtAuthMongo/routes"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
