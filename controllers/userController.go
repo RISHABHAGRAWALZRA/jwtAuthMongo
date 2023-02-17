@@ -32,7 +32,7 @@ func HashPassword(userPassword string) string {
 }
 
 func VerifyPassword(userPassword string, providedPassword string) (bool, string) {
-	err := bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(providedPassword))
+	err := bcrypt.CompareHashAndPassword([]byte(providedPassword), []byte(userPassword))
 	check := true
 	msg := ""
 
@@ -66,6 +66,9 @@ func Signup() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "error while checking for the email"})
 			return
 		}
+
+		password := HashPassword(*user.Password)
+		user.Password = &password
 
 		count, err = userCollection.CountDocuments(ctx, bson.M{"phone": user.Phone})
 		defer cancel()
@@ -120,12 +123,12 @@ func Login() gin.HandlerFunc {
 
 		passwordIsValid, msg := VerifyPassword(*user.Password, *foundUser.Password)
 		defer cancel()
-		if passwordIsValid != true {
+		if !passwordIsValid {
 			c.JSON(http.StatusBadGateway, gin.H{"error": msg})
 			return
 		}
 
-		if foundUser.Email != nil {
+		if foundUser.Email == nil {
 			c.JSON(http.StatusBadGateway, gin.H{"error": "user not found"})
 			return
 		}
